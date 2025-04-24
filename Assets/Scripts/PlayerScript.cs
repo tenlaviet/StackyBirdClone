@@ -4,22 +4,30 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class PlayerScript : MonoBehaviour
 {
-    // Start is called before the first frame update
-    [SerializeField] public GameObject m_Egg;
-    [SerializeField]private LayerMask m_SurfaceLayerMask;
 
+    [SerializeField] private GameObject m_Egg;
+    [SerializeField] private Bullet m_Laser;
+    
+    [SerializeField] private Tilemap m_GroundTileMap;
+    [SerializeField] private LayerMask m_SurfaceLayerMask;
+
+    
     private BoxCollider2D _playerCollider;
     
     
      
     
-    [SerializeField] float _rayCastLength;
+    private float _rayCastLength = 0.1f;
     private float _width;
     private float _height;
 
+    private float _laserOffset = 0.05f;
+    
+    
     private void Awake()
     {
         _playerCollider = GetComponent<BoxCollider2D>();
@@ -36,17 +44,23 @@ public class PlayerScript : MonoBehaviour
     private void Start()
     {
         InputManager.Instance.Player = this;
-
-        
     }
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Shoot();
+        }
         
         //IsGroundHit();
-        IsWallHit();
+        if (IsWallHit())
+        {
+            Die();
+        }
 
     }
+
 
     public void LayEgg()
     {
@@ -61,11 +75,17 @@ public class PlayerScript : MonoBehaviour
         Vector2 playerColliderCenter = _playerCollider.bounds.center;
         Vector2 origin = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y);
 
-        RaycastHit2D wallCheck = Physics2D.Raycast(origin, Vector2.right, _rayCastLength, m_SurfaceLayerMask);
+        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right, _rayCastLength, m_SurfaceLayerMask);
+        // if (hit)
+        // {
+        //     Vector3Int wtc = m_GroundTileMap.WorldToCell(hit.point);
+        //     Vector3 center = m_GroundTileMap.GetCellCenterWorld(wtc);
+        //     return hit;
+        // }
         Color color = new Color();
-        color = wallCheck ? Color.green : Color.red;
+        color = hit ? Color.green : Color.red;
         Debug.DrawRay(origin, Vector2.right * _rayCastLength, color);
-        return wallCheck;
+        return hit;
     }
 
     private bool IsGroundHit()
@@ -83,20 +103,16 @@ public class PlayerScript : MonoBehaviour
         return groundCheck;
     }
 
+    private void Shoot()
+    {
+        Vector2 playerColliderCenter = _playerCollider.bounds.center;
+        Vector3 laserSpawnPosition = new Vector2(playerColliderCenter.x + _width + _laserOffset, playerColliderCenter.y);
+
+        Instantiate(m_Laser, laserSpawnPosition, Quaternion.identity);
+    }
+
     private void Die()
     {
-        if (IsWallHit())
-        {
-            //kill player
-            return;
-        }
-
-        if (transform.position.y < -4)
-        {
-            //kill player
-            return;
-        }
-        //if player falls off bound
-        //if gets hit by a projectile
+        Destroy(gameObject);
     }
 }

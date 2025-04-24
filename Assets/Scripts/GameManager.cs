@@ -19,4 +19,22 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
+    private void LoadLevel()
+    {
+        Debug.Log("loadlevel");
+
+    }
+
+    private void RestartLevel()
+    {
+        Debug.Log("restartlevel");
+
+    }
+
+    private void GameOver()
+    {
+        Debug.Log("gameover");
+    }
+    
 }

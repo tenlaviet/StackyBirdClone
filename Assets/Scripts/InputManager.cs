@@ -22,13 +22,6 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Space");
-        }
-    }
 
     public void OnTap()
     {
