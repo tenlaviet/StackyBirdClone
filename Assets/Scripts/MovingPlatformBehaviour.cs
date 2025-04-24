@@ -25,7 +25,7 @@ public class MovingPlatformBehaviour : MonoBehaviour
 
     private void Start()
     {
-        _nextPosition = m_PointB.position;
+        _nextPosition = m_PointB.localPosition;
     }
 
     private void Update()
@@ -35,14 +35,14 @@ public class MovingPlatformBehaviour : MonoBehaviour
 
     private void Move(bool patrol)
     {
-        transform.position = Vector3.MoveTowards(transform.position, _nextPosition, m_speed * Time.deltaTime);
-        if (transform.position == _nextPosition)
+        transform.localPosition = Vector3.MoveTowards(transform.localPosition, _nextPosition, m_speed * Time.deltaTime);
+        if (transform.localPosition == _nextPosition)
         {
             // if (!patrol)
             // {
             //     platformScript.enabled = false;
             // }
-            _nextPosition = (_nextPosition == m_PointA.position) ? m_PointB.position : m_PointA.position;
+            _nextPosition = (_nextPosition == m_PointA.localPosition) ? m_PointB.localPosition : m_PointA.localPosition;
         }
     }
 }

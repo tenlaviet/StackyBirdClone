@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
-
-    public PlayerScript Player { get; set; }
+    public static GameManager Instance { get; private set; }
+    public World World;
+    public PlayerScript Player;
     void Awake()
     {
         if (Instance == null)
