@@ -1,10 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.Tilemaps;
-using Update = Unity.VisualScripting.Update;
 
 public class Bullet : MonoBehaviour
 {
@@ -43,7 +38,7 @@ public class Bullet : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right, _rayCastLength);
 
 
-        
+                
         if (hit)
         {
             if (hit.collider.CompareTag("Destructible"))

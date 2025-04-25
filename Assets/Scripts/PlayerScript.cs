@@ -1,10 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -12,12 +6,10 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private GameObject m_Egg;
     [SerializeField] private Bullet m_Laser;
     
-    [SerializeField] private Tilemap m_GroundTileMap;
     [SerializeField] private LayerMask m_SurfaceLayerMask;
 
     
     private BoxCollider2D _playerCollider;
-    
     
      
     
@@ -31,8 +23,6 @@ public class PlayerScript : MonoBehaviour
     private void Awake()
     {
         _playerCollider = GetComponent<BoxCollider2D>();
-        
-        
         _width = _playerCollider.bounds.extents.x;
         _height = _playerCollider.bounds.extents.y;
 
@@ -64,14 +54,34 @@ public class PlayerScript : MonoBehaviour
     private bool IsWallHit()
     {
         Vector2 playerColliderCenter = _playerCollider.bounds.center;
-        Vector2 origin = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y);
+        
+        Vector2 mid = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y);
+        Vector2 btm = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y - _height + 0.05f);
+        Vector2 top = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y + _height - 0.05f);
+        
+        RaycastHit2D midHit = Physics2D.Raycast(mid, Vector2.right, _rayCastLength, m_SurfaceLayerMask);
+        RaycastHit2D btmHit = Physics2D.Raycast(btm, Vector2.right, _rayCastLength, m_SurfaceLayerMask);
+        RaycastHit2D topHit = Physics2D.Raycast(top, Vector2.right, _rayCastLength, m_SurfaceLayerMask);
+        
+        Color color1 = midHit ? Color.green : Color.red;
+        Color color2 = btmHit ? Color.green : Color.red;
+        Color color3 = topHit ? Color.green : Color.red;
+        
+        
+        Debug.DrawRay(mid, Vector2.right * _rayCastLength, color1);
+        Debug.DrawRay(btm, Vector2.right * _rayCastLength, color2);
+        Debug.DrawRay(top, Vector2.right * _rayCastLength, color3);
 
-        RaycastHit2D hit = Physics2D.Raycast(origin, Vector2.right, _rayCastLength, m_SurfaceLayerMask);
+        if (midHit || btmHit || topHit)
+        {
+            // Debug.Log("btm:"+btmHit);
+            // Debug.Log("mid:"+midHit);
+            // Debug.Log("top:"+topHit);
+            return true;
+        }
+        return false;
 
-        Color color = new Color();
-        color = hit ? Color.green : Color.red;
-        Debug.DrawRay(origin, Vector2.right * _rayCastLength, color);
-        return hit;
+
     }
 
     private bool IsGroundHit()
@@ -109,7 +119,8 @@ public class PlayerScript : MonoBehaviour
 
     private void Die()
     {
-        Destroy(gameObject);
+        GameManager.Instance.ResetLevel();
+        //Destroy(gameObject);
     }
     
     

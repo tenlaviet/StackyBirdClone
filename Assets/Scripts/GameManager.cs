@@ -1,40 +1,54 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    
+    public int stage { get; private set; } = 1;
+    
     public World World;
     public PlayerScript Player;
-    void Awake()
+    private void Awake()
     {
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(Instance);
+            Destroy(gameObject);
         }
     }
 
-
-    private void LoadLevel()
+    private void Start()
     {
-        Debug.Log("loadlevel");
-
+        throw new NotImplementedException();
     }
 
-    private void RestartLevel()
+    private void OnDestroy()
     {
-        Debug.Log("restartlevel");
+        if (Instance == this) {
+            Instance = null;
+        }
+    }
+    public void LoadLevel(int stage)
+    {
+        this.stage = stage;
 
+        SceneManager.LoadScene($"World_1-{stage}");
     }
 
-    private void GameOver()
+    public void NextLevel()
     {
-        Debug.Log("gameover");
+        LoadLevel(this.stage + 1);
     }
-    
+
+    public void ResetLevel()
+    {
+        LoadLevel(this.stage);
+    }
+
 }
