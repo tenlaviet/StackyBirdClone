@@ -21,6 +21,6 @@ public class InputManager : MonoBehaviour
 
     public void OnTap()
     {
-        Player.LayEgg();
+        //Player.LayEgg();
     }
 }

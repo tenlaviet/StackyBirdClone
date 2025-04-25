@@ -9,7 +9,7 @@ public class MovingPlatformBehaviour : MonoBehaviour
     [SerializeField] private Transform m_PointB;
 
     [SerializeField] private float m_speed;
-    private Vector3 _nextPosition;
+    private Vector3 _destination;
     
     
     
@@ -22,24 +22,20 @@ public class MovingPlatformBehaviour : MonoBehaviour
 
     private void Start()
     {
-        _nextPosition = m_PointB.localPosition;
+        _destination = m_PointB.localPosition;
     }
 
     private void Update()
     {
-        Move(false);
+        Move();
     }
 
-    private void Move(bool patrol)
+    private void Move()
     {
-        transform.localPosition = Vector3.MoveTowards(transform.localPosition, _nextPosition, m_speed * Time.deltaTime);
-        if (transform.localPosition == _nextPosition)
+        transform.localPosition = Vector3.MoveTowards(transform.localPosition, _destination, m_speed * Time.deltaTime);
+        if (transform.localPosition == _destination)
         {
-            // if (!patrol)
-            // {
-            //     platformScript.enabled = false;
-            // }
-            _nextPosition = (_nextPosition == m_PointA.localPosition) ? m_PointB.localPosition : m_PointA.localPosition;
+            this.enabled = false;
         }
     }
 }
