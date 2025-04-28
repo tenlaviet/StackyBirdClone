@@ -15,7 +15,7 @@ public class PlayerScript : MonoBehaviour
     
     private float _width;
     private float _height;
-    private float _wallCheckRayCastLength = 0.1f;
+    private float _wallCheckRayCastLength = 1f;
     private float _floorCheckRayCastLength = 0.3f;
     private float _perfectCheckRayCastLength = 0.1f;
 
@@ -50,15 +50,8 @@ public class PlayerScript : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            LayEgg();
-        }
-
         if (IsPerfectLand())
         {
-            
-            Debug.Log("Perfect");
             _perfectCount++;
         }
         ShootyMode();
@@ -73,27 +66,29 @@ public class PlayerScript : MonoBehaviour
         Vector2 playerColliderCenter = _playerCollider.bounds.center;
         
         Vector2 mid = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y);
-        Vector2 btm = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y - _height + 0.05f);
-        Vector2 top = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y + _height - 0.05f);
+        Vector2 btm = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y - _height + 0.1f);
+        Vector2 top = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y + _height - 0.1f);
         
         RaycastHit2D midHit = Physics2D.Raycast(mid, Vector2.right, _wallCheckRayCastLength, m_WallLayerMask);
         RaycastHit2D btmHit = Physics2D.Raycast(btm, Vector2.right, _wallCheckRayCastLength, m_WallLayerMask);
         RaycastHit2D topHit = Physics2D.Raycast(top, Vector2.right, _wallCheckRayCastLength, m_WallLayerMask);
         //
 
-        // Color color3 = topHit ? Color.green : Color.red;
-        //
-        //
-        // Debug.DrawRay(mid, Vector2.right * _wallCheckRayCastLength, color1);
-        // Debug.DrawRay(btm, Vector2.right * _wallCheckRayCastLength, color2);
-        // Debug.DrawRay(top, Vector2.right * _wallCheckRayCastLength, color3);
+        Color color1 = midHit ? Color.green : Color.red;
+        Color color2 = btmHit ? Color.green : Color.red;
+        Color color3 = topHit ? Color.green : Color.red;
+        
+        
+        Debug.DrawRay(mid, Vector2.right * _wallCheckRayCastLength, color1);
+        Debug.DrawRay(btm, Vector2.right * _wallCheckRayCastLength, color2);
+        Debug.DrawRay(top, Vector2.right * _wallCheckRayCastLength, color3);
 
         if (midHit || btmHit || topHit)
         {
             // Debug.Log("btm:"+btmHit);
             // Debug.Log("mid:"+midHit);
             // Debug.Log("top:"+topHit);
-            Die();
+            //Die();
             return true;
         }
         return false;
@@ -158,7 +153,7 @@ public class PlayerScript : MonoBehaviour
     public void LayEgg()
     {
         Vector3 eggSpawnPosition = _playerCollider.bounds.center;
-        transform.position += Vector3.up*1.05f;
+        transform.position += Vector3.up;
         GameObject egg = Instantiate(m_Egg, eggSpawnPosition, Quaternion.identity);
         Debug.Log("lay egg");
     }
