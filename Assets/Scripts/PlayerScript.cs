@@ -22,8 +22,8 @@ public class PlayerScript : MonoBehaviour
     private int _perfectCount;
     readonly float _shootCycle = 0.1f;
     private float _shootyModeDuration = 7f;
-    [SerializeField]private float _shootCycleTime;
-    [SerializeField]private float _shootyModeDurationTime;
+    private float _shootCycleTime;
+    private float _shootyModeDurationTime;
     private float _bulletOffset = 0.05f;
     
     
@@ -215,8 +215,8 @@ public class PlayerScript : MonoBehaviour
 
     private void Shoot()
     {
-        Vector2 playerColliderCenter = _col.bounds.center;
-        Vector3 bulletSpawnPosition = new Vector2(playerColliderCenter.x + _width + _bulletOffset, playerColliderCenter.y);
+        
+        Vector3 bulletSpawnPosition = new Vector2(_col.bounds.center.x + _width, _col.bounds.center.y);
     
         Instantiate(m_Laser, bulletSpawnPosition, Quaternion.identity);
     }
