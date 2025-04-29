@@ -10,13 +10,10 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private LayerMask m_SurfaceLayerMask;
     
     private BoxCollider2D _col;
-
-
-    private float _gravity = 7f;
     
     private float _width;
     private float _height;
-    private float _wallCheckRayCastLength = 1f;
+    private float _wallCheckRayCastLength = 0.05f;
     private float _floorCheckRayCastLength = 0.3f;
     private float _perfectCheckRayCastLength = 0.1f;
 
@@ -51,33 +48,39 @@ public class PlayerScript : MonoBehaviour
 
     void Update()
     {
-        if (IsPerfectLand())
+        if (IsGrounded() == false)
         {
-            _perfectCount++;
+            HandleGravity(); 
         }
-        ShootyMode();
+
         if (IsWallHit())
         {
             Die();
         }
 
-        if (IsGrounded() == false)
+        if (IsPerfectLand())
         {
-           HandleGravity(); 
+            _perfectCount++;
         }
-        //IsGrounded();
+        if (_perfectCount >=3)
+        {
+            ShootyMode();
+        }
+
+        IsTopEmpty();
     }
     
     
     private bool IsGrounded()
     {
         float length = 0.01f;
+        
         Vector3 btmLeft = new Vector3(_col.bounds.center.x - _col.bounds.extents.x, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
-        //Vector3 btmMid = new Vector3(_col.bounds.center.x, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
         Vector3 btmRight = new Vector3(_col.bounds.center.x + _col.bounds.extents.x, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
+        
         RaycastHit2D btmLeftHit = Physics2D.Raycast(btmLeft, Vector2.down, length);
-        //RaycastHit2D btmMidHit = Physics2D.Raycast(btmMid, Vector2.down, length);
         RaycastHit2D btmRightHit = Physics2D.Raycast(btmRight, Vector2.down, length);
+        
         // Color color1 = groundHit ? Color.green : Color.red;
         // Debug.DrawRay(origin, Vector2.down * (length), color1);
         bool groundHit = false;
@@ -89,8 +92,7 @@ public class PlayerScript : MonoBehaviour
                 float snapYPos = Mathf.Round(transform.position.y / 0.5f)*0.5f;
                 transform.position = new Vector2(transform.position.x, snapYPos);
             }
-            //transform.position.y
-        }
+        }//may or maynot needed
         return groundHit;
     }
     private bool IsWallHit()
@@ -106,14 +108,14 @@ public class PlayerScript : MonoBehaviour
         RaycastHit2D topHit = Physics2D.Raycast(top, Vector2.right, _wallCheckRayCastLength, m_WallLayerMask);
         //
 
-        Color color1 = midHit ? Color.green : Color.red;
-        Color color2 = btmHit ? Color.green : Color.red;
-        Color color3 = topHit ? Color.green : Color.red;
-        
-        
-        Debug.DrawRay(mid, Vector2.right * _wallCheckRayCastLength, color1);
-        Debug.DrawRay(btm, Vector2.right * _wallCheckRayCastLength, color2);
-        Debug.DrawRay(top, Vector2.right * _wallCheckRayCastLength, color3);
+        // Color color1 = midHit ? Color.green : Color.red;
+        // Color color2 = btmHit ? Color.green : Color.red;
+        // Color color3 = topHit ? Color.green : Color.red;
+        //
+        //
+        // Debug.DrawRay(mid, Vector2.right * _wallCheckRayCastLength, color1);
+        // Debug.DrawRay(btm, Vector2.right * _wallCheckRayCastLength, color2);
+        // Debug.DrawRay(top, Vector2.right * _wallCheckRayCastLength, color3);
 
         if (midHit || btmHit || topHit)
         {
@@ -126,6 +128,21 @@ public class PlayerScript : MonoBehaviour
         return false;
 
 
+    }
+
+    private bool IsTopEmpty()
+    {
+        float length = 0.99f;
+        Vector3 topLeft = new Vector3(_col.bounds.center.x - _col.bounds.extents.x, _col.bounds.center.y + _col.bounds.extents.y, 0);
+        Vector3 topRight = new Vector3(_col.bounds.center.x + _col.bounds.extents.x, _col.bounds.center.y + _col.bounds.extents.y, 0);
+        RaycastHit2D topLeftHit = Physics2D.Raycast(topLeft, Vector2.up, length, ~(LayerMask.GetMask("Player")));
+        RaycastHit2D topRighttHit = Physics2D.Raycast(topRight, Vector2.up, length, ~(LayerMask.GetMask("Player")));
+        // Color color1 = topLeftHit ? Color.green : Color.red;
+        // Color color2 = topRighttHit ? Color.green : Color.red;
+        // Debug.DrawRay(topLeft, Vector2.up * (length), color1);
+        // Debug.DrawRay(topRight, Vector2.up * (length), color2);
+        bool topHit = (!topLeftHit && !topRighttHit);
+        return topHit;
     }
     private bool IsPerfectLand()
     {
@@ -160,35 +177,36 @@ public class PlayerScript : MonoBehaviour
     private void HandleGravity()
     {
 
-        transform.Translate(Vector2.down * (_gravity * Time.deltaTime));
+        transform.Translate(Vector2.down * (Data.Gravity * Time.deltaTime));
         //transform.position = new Vector3(transform.position.x, transform.position.y - (gravity* Time.deltaTime));
     }
     private void ShootyMode()
     {
-        if (_perfectCount >=3)
+        if (_shootyModeDurationTime > 0)
         {
-            if (_shootyModeDurationTime > 0)
+            if (_shootCycleTime <=0)
             {
-                if (_shootCycleTime <=0)
-                {
-                    Shoot();
-                    _shootCycleTime = _shootCycle;
-                }
+                Shoot();
+                _shootCycleTime = _shootCycle;
+            }
 
-                _shootCycleTime -= Time.deltaTime;
-                _shootyModeDurationTime -= Time.deltaTime;
-            }
-            if (_shootyModeDurationTime < 0)
-            {
-                _shootyModeDurationTime = _shootyModeDuration;
-                _perfectCount = 0;
-            }
+            _shootCycleTime -= Time.deltaTime;
+            _shootyModeDurationTime -= Time.deltaTime;
         }
-        
+        if (_shootyModeDurationTime < 0)
+        {
+            _shootyModeDurationTime = _shootyModeDuration;
+            _perfectCount = 0;
+        }
     }
 
     public void LayEgg()
     {
+        if (!IsTopEmpty())
+        {
+            Debug.Log("no space to lay egg");
+            return;
+        }
         Vector3 eggSpawnPosition = _col.bounds.center;
         transform.position += Vector3.up;
         GameObject egg = Instantiate(m_Egg, eggSpawnPosition, Quaternion.identity);

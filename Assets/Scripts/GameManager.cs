@@ -48,7 +48,8 @@ public class GameManager : MonoBehaviour
 
     public void ResetLevel()
     {
-        LoadLevel(this.stage);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        //LoadLevel(this.stage);
     }
 
 }

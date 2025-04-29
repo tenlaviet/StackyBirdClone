@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class MovingPlatformBehaviour : MonoBehaviour
 {
@@ -10,8 +12,8 @@ public class MovingPlatformBehaviour : MonoBehaviour
 
     [SerializeField] private float m_speed;
     private Vector3 _destination;
-    
-    
+
+    private bool _active;
     
     private void Awake()
     {
@@ -27,7 +29,11 @@ public class MovingPlatformBehaviour : MonoBehaviour
 
     private void Update()
     {
-        Move();
+        //CheckTriggered();
+        if (_active)
+        {
+            Move();
+        }
     }
 
     private void Move()
@@ -35,7 +41,25 @@ public class MovingPlatformBehaviour : MonoBehaviour
         transform.localPosition = Vector3.MoveTowards(transform.localPosition, _destination, m_speed * Time.deltaTime);
         if (transform.localPosition == _destination)
         {
-            this.enabled = false;
+            _active = false;
+            platformScript.enabled = false;
+        }
+    }
+
+    // private void CheckTriggered()
+    // {
+    //     RaycastHit2D triggerHit = Physics2D.BoxCast(transform.position, new Vector2(1, 20), 0f, Vector2.left, 7f, LayerMask.GetMask("Player"));
+    //
+    //     if (triggerHit)
+    //     {
+    //         _active = true;
+    //     }
+    // }
+    private void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col.CompareTag("Player"))
+        {
+            _active = true;
         }
     }
 }

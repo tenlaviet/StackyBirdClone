@@ -8,8 +8,7 @@ public class EggScript : MonoBehaviour
     private Rigidbody2D _rb;
     private BoxCollider2D _col;
     
-    private Vector3 _velocity;
-    private float _gravity = 7f;
+
 
     private bool _wallHit;
     // Start is called before the first frame update
@@ -41,14 +40,18 @@ public class EggScript : MonoBehaviour
     private bool IsGrounded()
     {
         float length = 0.01f;
-        Vector3 btmLeft = new Vector3(_col.bounds.center.x - _col.bounds.extents.x, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
-        //Vector3 btmMid = new Vector3(_col.bounds.center.x, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
-        Vector3 btmRight = new Vector3(_col.bounds.center.x + _col.bounds.extents.x, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
+        Vector3 btmLeft = new Vector3(_col.bounds.center.x - _col.bounds.extents.x + 0.05f, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
+        Vector3 btmRight = new Vector3(_col.bounds.center.x + _col.bounds.extents.x - 0.05f, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
+        
         RaycastHit2D btmLeftHit = Physics2D.Raycast(btmLeft, Vector2.down, length);
-        //RaycastHit2D btmMidHit = Physics2D.Raycast(btmMid, Vector2.down, length);
         RaycastHit2D btmRightHit = Physics2D.Raycast(btmRight, Vector2.down, length);
-        // Color color1 = groundHit ? Color.green : Color.red;
-        // Debug.DrawRay(origin, Vector2.down * (length), color1);
+        
+        // Color color1 = btmLeftHit ? Color.green : Color.red;
+        // Color color2 = btmRightHit ? Color.green : Color.red;
+        //
+        // Debug.DrawRay(btmLeft, Vector2.down * (length), color1);
+        // Debug.DrawRay(btmRight, Vector2.down * (length), color2);
+        
         bool groundHit = false;
         if (btmLeftHit || btmRightHit)
         {
@@ -87,11 +90,6 @@ public class EggScript : MonoBehaviour
 
             if (btmHit || topHit)
             {
-                // if (transform.position.x % 0.5f != 0)
-                // {
-                //     float snapXPos = Mathf.Round(transform.position.x / 0.5f)*0.5f;
-                //     transform.position = new Vector2(snapXPos, transform.position.x);
-                // }
                 _wallHit = true;
             }
         }
@@ -100,11 +98,11 @@ public class EggScript : MonoBehaviour
     private void HandleGravity()
     {
 
-        transform.Translate(Vector2.down * (_gravity * Time.deltaTime));
+        transform.Translate(Vector2.down * (Data.Gravity * Time.deltaTime));
         //transform.position = new Vector3(transform.position.x, transform.position.y - (gravity* Time.deltaTime));
     }
     private void PushBack()
     {
-        transform.Translate(Vector2.left * (2 * Time.deltaTime));
+        transform.Translate(Vector2.left * (Data.WorldSpeed * Time.deltaTime));
     }
 }

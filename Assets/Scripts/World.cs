@@ -6,10 +6,7 @@ public class World : MonoBehaviour
 
     public Tilemap m_DestructibleMap; 
     public Tilemap m_InDestructibleMap; 
-
-        
-        
-    [SerializeField] private float m_Speed;
+    
     private void Awake()
     {
         //GameManager.Instance.World = this;
@@ -21,11 +18,11 @@ public class World : MonoBehaviour
 
     void Update()
     {
-        Traverse(m_Speed);
+        Traverse(Data.WorldSpeed);
     }
 
     private void Traverse(float speed)
     {
-        transform.Translate(Vector2.left * (speed * Time.deltaTime));
+        transform.Translate(Vector2.left * (Data.WorldSpeed * Time.deltaTime));
     }
 }

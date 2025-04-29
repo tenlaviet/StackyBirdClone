@@ -10,6 +10,8 @@ public class Bullet : MonoBehaviour
     private float _rayCastLength = 0.1f;
     private float _width;
 
+
+    private float _projectileSpeed = 7;
     private void Awake()
     {
         _renderer = GetComponent<SpriteRenderer>();
@@ -26,11 +28,11 @@ public class Bullet : MonoBehaviour
 
     private void Update()
     {
-        transform.Translate(new Vector3(1,0,0) * (7 * Time.deltaTime));
-        Hit();
+        transform.Translate(Vector2.right * (_projectileSpeed * Time.deltaTime));
+        HitScan();
     }
 
-    private void Hit()
+    private void HitScan()
     {
         Vector2 center = _renderer.bounds.center;
         Vector2 origin = new Vector2(center.x + _width, center.y);
@@ -45,6 +47,11 @@ public class Bullet : MonoBehaviour
             {
                 Vector3Int gridPosition = _destructibleMap.WorldToCell(hit.point);
                 _destructibleMap.SetTile(gridPosition, null);
+            }
+
+            if (hit.collider.CompareTag("DestructiblePlatform"))
+            {
+                Destroy(hit.transform.gameObject);
             }
             Destroy(gameObject);
         }
