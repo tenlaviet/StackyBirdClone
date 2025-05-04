@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerScript : MonoBehaviour
 {
 
-    [SerializeField] private GameObject m_Egg;
+    [SerializeField] private EggScript m_Egg;
     [SerializeField] private Bullet m_Laser;
     
     [SerializeField] private LayerMask m_WallLayerMask;
@@ -18,9 +18,9 @@ public class PlayerScript : MonoBehaviour
     private float _perfectCheckRayCastLength = 0.1f;
 
     
-    private bool _perfectCheck = true;
+    private bool _perfectCheck;
     private int _perfectCount;
-    readonly float _shootCycle = 0.1f;
+    private float _shootCycle = 0.1f;
     private float _shootyModeDuration = 7f;
     private float _shootCycleTime;
     private float _shootyModeDurationTime;
@@ -33,6 +33,7 @@ public class PlayerScript : MonoBehaviour
         _width = _col.bounds.extents.x;
         _height = _col.bounds.extents.y;
 
+        _perfectCheck = true;
         _shootCycleTime = 0;
         _shootyModeDurationTime = _shootyModeDuration;
         //int surfaceLayerMask = LayerMask.GetMask("Surface");
@@ -209,8 +210,14 @@ public class PlayerScript : MonoBehaviour
         }
         Vector3 eggSpawnPosition = _col.bounds.center;
         transform.position += Vector3.up;
-        GameObject egg = Instantiate(m_Egg, eggSpawnPosition, Quaternion.identity);
-        Debug.Log("lay egg");
+
+        
+        EggScript egg = Instantiate(m_Egg, eggSpawnPosition, Quaternion.identity);
+        
+        if (_perfectCount >=3)
+        {
+            egg.EggIsTransmutable();
+        }
     }
 
     private void Shoot()

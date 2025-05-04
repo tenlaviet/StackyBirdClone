@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f046be29c1c5efb4ba77d57ee09240d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Egg: {fileID: 7485409732023573901, guid: 07ea588b13b83e0488b4e1609df88bd4, type: 3}
+  m_Egg: {fileID: -4298757960409439145, guid: 07ea588b13b83e0488b4e1609df88bd4, type: 3}
   m_Laser: {fileID: 5476747761035580361, guid: 9efbfa96eaf68524ea5fcf32e71be2b6, type: 3}
   m_WallLayerMask:
     serializedVersion: 2
@@ -107,8 +107,6 @@ MonoBehaviour:
   m_SurfaceLayerMask:
     serializedVersion: 2
     m_Bits: 1048576
-  _shootCycleTime: 0
-  _shootyModeDurationTime: 0
 --- !u!50 &8495426266675900820
 Rigidbody2D:
   serializedVersion: 4

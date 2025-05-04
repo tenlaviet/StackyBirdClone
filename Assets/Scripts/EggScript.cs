@@ -7,10 +7,10 @@ public class EggScript : MonoBehaviour
 {
     private Rigidbody2D _rb;
     private BoxCollider2D _col;
-    
 
+    private bool _isToTransmute;
 
-    private bool _wallHit;
+    private bool _isWallHit;
     // Start is called before the first frame update
     void Awake()
     {
@@ -26,9 +26,14 @@ public class EggScript : MonoBehaviour
            HandleGravity();
         }
         IsWallHit();
-        if (_wallHit)
+        if (_isWallHit)
         {
             PushBack();
+        }
+
+        if (IsGrounded() && _isToTransmute)
+        {
+            Transmute();
         }
     }
 
@@ -68,7 +73,7 @@ public class EggScript : MonoBehaviour
     
     private void IsWallHit()
     {
-        if (_wallHit == false)
+        if (_isWallHit == false)
         {
             float length = 0.01f;
             Vector2 colCenter = _col.bounds.center;
@@ -90,7 +95,7 @@ public class EggScript : MonoBehaviour
 
             if (btmHit || topHit)
             {
-                _wallHit = true;
+                _isWallHit = true;
             }
         }
 
@@ -104,5 +109,15 @@ public class EggScript : MonoBehaviour
     private void PushBack()
     {
         transform.Translate(Vector2.left * (Data.WorldSpeed * Time.deltaTime));
+    }
+
+    public void EggIsTransmutable()
+    {
+        _isToTransmute = true;
+    }
+    private void Transmute()
+    {
+        GameManager.Instance.GoldIncrement();
+        Destroy(gameObject);
     }
 }
