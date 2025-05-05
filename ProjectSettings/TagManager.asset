@@ -9,6 +9,7 @@ TagManager:
   - Destructible
   - InDestructible
   - DestructiblePlatform
+  - Present
   layers:
   - Default
   - TransparentFX
@@ -29,9 +30,9 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Egg
   - Surface
-  - 
+  - Present
   - 
   - 
   - 

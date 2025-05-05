@@ -11,6 +11,9 @@ public class EggScript : MonoBehaviour
     private bool _isToTransmute;
 
     private bool _isWallHit;
+    
+    private float _currentFallSpeed = Data.MinimumFallSpeed;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -25,85 +28,91 @@ public class EggScript : MonoBehaviour
         {
            HandleGravity();
         }
-        IsWallHit();
+        WallCheck();
         if (_isWallHit)
         {
             PushBack();
         }
-
+        if (transform.position.y < -6)
+        {
+            Destroy(gameObject);
+        }
         if (IsGrounded() && _isToTransmute)
         {
             Transmute();
         }
     }
 
-    private void FixedUpdate()
-    {
-    }
-    
+
     
     private bool IsGrounded()
     {
-        float length = 0.01f;
+        float length = 0.05f;
         Vector3 btmLeft = new Vector3(_col.bounds.center.x - _col.bounds.extents.x + 0.05f, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
         Vector3 btmRight = new Vector3(_col.bounds.center.x + _col.bounds.extents.x - 0.05f, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
         
         RaycastHit2D btmLeftHit = Physics2D.Raycast(btmLeft, Vector2.down, length);
         RaycastHit2D btmRightHit = Physics2D.Raycast(btmRight, Vector2.down, length);
         
-        // Color color1 = btmLeftHit ? Color.green : Color.red;
-        // Color color2 = btmRightHit ? Color.green : Color.red;
-        //
-        // Debug.DrawRay(btmLeft, Vector2.down * (length), color1);
-        // Debug.DrawRay(btmRight, Vector2.down * (length), color2);
+        Color color1 = btmLeftHit ? Color.green : Color.red;
+        Color color2 = btmRightHit ? Color.green : Color.red;
+        
+        Debug.DrawRay(btmLeft, Vector2.down * (length), color1);
+        Debug.DrawRay(btmRight, Vector2.down * (length), color2);
         
         bool groundHit = false;
         if (btmLeftHit || btmRightHit)
         {
             groundHit = true;
+            _currentFallSpeed = Data.MinimumFallSpeed;
             if (transform.position.y % 0.5f != 0)
             {
                 float snapYPos = Mathf.Round(transform.position.y / 0.5f)*0.5f;
                 transform.position = new Vector2(transform.position.x, snapYPos);
             }
-            //transform.position.y
         }
         return groundHit;
     }
     
-    private void IsWallHit()
+    private void WallCheck()
     {
-        if (_isWallHit == false)
+
+        float length = 0.01f;
+        Vector2 colCenter = _col.bounds.center;
+        float width = _col.bounds.extents.x;
+        float height = _col.bounds.extents.y;
+        Vector2 btm = new Vector2(colCenter.x + width + 0.01f, colCenter.y - height + 0.1f);
+        Vector2 top = new Vector2(colCenter.x + width + 0.01f, colCenter.y + height - 0.1f);
+    
+        RaycastHit2D btmHit = Physics2D.Raycast(btm, Vector2.right, length, LayerMask.GetMask("Surface"));
+        RaycastHit2D topHit = Physics2D.Raycast(top, Vector2.right, length, LayerMask.GetMask("Surface"));
+    
+
+        Color color1 = btmHit ? Color.green : Color.red;
+        Color color2 = topHit ? Color.green : Color.red;
+        
+        
+        Debug.DrawRay(btm, Vector2.right * length, color1);
+        Debug.DrawRay(top, Vector2.right * length, color2);
+
+        if (btmHit || topHit)
         {
-            float length = 0.01f;
-            Vector2 colCenter = _col.bounds.center;
-            float width = _col.bounds.extents.x;
-            float height = _col.bounds.extents.y;
-            Vector2 btm = new Vector2(colCenter.x + width + 0.01f, colCenter.y - height + 0.1f);
-            Vector2 top = new Vector2(colCenter.x + width + 0.01f, colCenter.y + height - 0.1f);
-        
-            RaycastHit2D btmHit = Physics2D.Raycast(btm, Vector2.right, length, LayerMask.GetMask("Surface"));
-            RaycastHit2D topHit = Physics2D.Raycast(top, Vector2.right, length, LayerMask.GetMask("Surface"));
-        
-
-            // Color color1 = btmHit ? Color.green : Color.red;
-            // Color color2 = topHit ? Color.green : Color.red;
-            //
-            //
-            // Debug.DrawRay(btm, Vector2.right * length, color1);
-            // Debug.DrawRay(top, Vector2.right * length, color2);
-
-            if (btmHit || topHit)
-            {
-                _isWallHit = true;
-            }
+            _isWallHit = true;
         }
-
+        
     }
     private void HandleGravity()
     {
-
-        transform.Translate(Vector2.down * (Data.Gravity * Time.deltaTime));
+        if (_currentFallSpeed < Data.MaxFallSpeed)
+        {
+            _currentFallSpeed += Data.Acceleration * Time.deltaTime;
+        }
+        if (_currentFallSpeed > Data.MaxFallSpeed)
+        {
+            _currentFallSpeed = Data.MaxFallSpeed;
+        }
+        transform.Translate(Vector2.down * (_currentFallSpeed * Time.deltaTime));
+        //transform.Translate(Vector2.down * (Data.Gravity * Time.deltaTime));
         //transform.position = new Vector3(transform.position.x, transform.position.y - (gravity* Time.deltaTime));
     }
     private void PushBack()
@@ -117,7 +126,7 @@ public class EggScript : MonoBehaviour
     }
     private void Transmute()
     {
-        GameManager.Instance.GoldIncrement();
+        GameManager.Instance.GoldIncrement(1);
         Destroy(gameObject);
     }
 }

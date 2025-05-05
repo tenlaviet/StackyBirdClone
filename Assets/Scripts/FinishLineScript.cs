@@ -7,8 +7,7 @@ public class FinishLineScript : MonoBehaviour
     {
         if (col.CompareTag("Player"))
         {            
-            Debug.Log(col.gameObject.name + " : " + gameObject.name + " : " + col.gameObject.tag);
-            GameManager.Instance.ResetLevel();
+            GameManager.Instance.NextLevel();
         }
     }
     

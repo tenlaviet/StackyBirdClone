@@ -4,6 +4,12 @@ using UnityEngine;
 
 public static class Data
 {
-    public static readonly int WorldSpeed = 3;
-    public static readonly float Gravity = 6f;
+    public static readonly float WorldSpeed = 3f;
+    public static readonly float Gravity = 3f;
+    public static readonly float MinimumFallSpeed = 4f;
+    public static readonly float MaxFallSpeed = 12f;
+    public static readonly float Acceleration  = 12f;
+
+
+    public static readonly int MaxLevel = 6;
 }

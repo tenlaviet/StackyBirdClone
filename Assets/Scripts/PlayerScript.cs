@@ -6,8 +6,8 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private EggScript m_Egg;
     [SerializeField] private Bullet m_Laser;
     
-    [SerializeField] private LayerMask m_WallLayerMask;
-    [SerializeField] private LayerMask m_SurfaceLayerMask;
+    [SerializeField] private LayerMask m_GroundCheckLayerMask;
+    [SerializeField] private LayerMask m_WallCheckLayerMask;
     
     private BoxCollider2D _col;
     
@@ -19,13 +19,14 @@ public class PlayerScript : MonoBehaviour
 
     
     private bool _perfectCheck;
-    private int _perfectCount;
+    public int _perfectCount { get; private set; }
     private float _shootCycle = 0.1f;
     private float _shootyModeDuration = 7f;
     private float _shootCycleTime;
     private float _shootyModeDurationTime;
     private float _bulletOffset = 0.05f;
-    
+
+    private float _currentFallSpeed = Data.MinimumFallSpeed;
     
     private void Awake()
     {
@@ -42,9 +43,8 @@ public class PlayerScript : MonoBehaviour
 
     private void Start()
     {
-        InputManager.Instance.Player = this;
+        UI.Instance.Player = this;
         GameManager.Instance.Player = this;
-
     }
 
     void Update()
@@ -59,28 +59,37 @@ public class PlayerScript : MonoBehaviour
             Die();
         }
 
+        if (transform.position.y < -4)
+        {
+            Die();
+        }
+        
         if (IsPerfectLand())
         {
             _perfectCount++;
+            GameManager.Instance.UpdatePerfectCount();
         }
         if (_perfectCount >=3)
         {
             ShootyMode();
         }
-
         IsTopEmpty();
     }
     
     
     private bool IsGrounded()
     {
-        float length = 0.01f;
+        // float length = 0.01f;
+        //
+        // Vector3 btmLeft = new Vector3(_col.bounds.center.x - _col.bounds.extents.x, _col.bounds.center.y - _col.bounds.extents.y, 0);
+        // Vector3 btmRight = new Vector3(_col.bounds.center.x + _col.bounds.extents.x, _col.bounds.center.y - _col.bounds.extents.y, 0);
+        float length = 0.05f;
+        Vector3 btmLeft = new Vector3(_col.bounds.center.x - _col.bounds.extents.x + 0.05f, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
+        Vector3 btmRight = new Vector3(_col.bounds.center.x + _col.bounds.extents.x - 0.05f, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
+
         
-        Vector3 btmLeft = new Vector3(_col.bounds.center.x - _col.bounds.extents.x, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
-        Vector3 btmRight = new Vector3(_col.bounds.center.x + _col.bounds.extents.x, _col.bounds.center.y - _col.bounds.extents.y -0.01f, 0);
-        
-        RaycastHit2D btmLeftHit = Physics2D.Raycast(btmLeft, Vector2.down, length);
-        RaycastHit2D btmRightHit = Physics2D.Raycast(btmRight, Vector2.down, length);
+        RaycastHit2D btmLeftHit = Physics2D.Raycast(btmLeft, Vector2.down, length , m_GroundCheckLayerMask);
+        RaycastHit2D btmRightHit = Physics2D.Raycast(btmRight, Vector2.down, length, m_GroundCheckLayerMask);
         
         // Color color1 = groundHit ? Color.green : Color.red;
         // Debug.DrawRay(origin, Vector2.down * (length), color1);
@@ -88,6 +97,7 @@ public class PlayerScript : MonoBehaviour
         if (btmLeftHit || btmRightHit)
         {
             groundHit = true;
+            _currentFallSpeed = Data.MinimumFallSpeed;
             if (transform.position.y % 0.5f != 0)
             {
                 float snapYPos = Mathf.Round(transform.position.y / 0.5f)*0.5f;
@@ -104,9 +114,9 @@ public class PlayerScript : MonoBehaviour
         Vector2 btm = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y - _height + 0.1f);
         Vector2 top = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y + _height - 0.1f);
         
-        RaycastHit2D midHit = Physics2D.Raycast(mid, Vector2.right, _wallCheckRayCastLength, m_WallLayerMask);
-        RaycastHit2D btmHit = Physics2D.Raycast(btm, Vector2.right, _wallCheckRayCastLength, m_WallLayerMask);
-        RaycastHit2D topHit = Physics2D.Raycast(top, Vector2.right, _wallCheckRayCastLength, m_WallLayerMask);
+        RaycastHit2D midHit = Physics2D.Raycast(mid, Vector2.right, _wallCheckRayCastLength, m_WallCheckLayerMask);
+        RaycastHit2D btmHit = Physics2D.Raycast(btm, Vector2.right, _wallCheckRayCastLength, m_WallCheckLayerMask);
+        RaycastHit2D topHit = Physics2D.Raycast(top, Vector2.right, _wallCheckRayCastLength, m_WallCheckLayerMask);
         //
 
         // Color color1 = midHit ? Color.green : Color.red;
@@ -130,14 +140,13 @@ public class PlayerScript : MonoBehaviour
 
 
     }
-
     private bool IsTopEmpty()
     {
         float length = 0.99f;
         Vector3 topLeft = new Vector3(_col.bounds.center.x - _col.bounds.extents.x, _col.bounds.center.y + _col.bounds.extents.y, 0);
         Vector3 topRight = new Vector3(_col.bounds.center.x + _col.bounds.extents.x, _col.bounds.center.y + _col.bounds.extents.y, 0);
-        RaycastHit2D topLeftHit = Physics2D.Raycast(topLeft, Vector2.up, length, ~(LayerMask.GetMask("Player")));
-        RaycastHit2D topRighttHit = Physics2D.Raycast(topRight, Vector2.up, length, ~(LayerMask.GetMask("Player")));
+        RaycastHit2D topLeftHit = Physics2D.Raycast(topLeft, Vector2.up, length, m_WallCheckLayerMask);
+        RaycastHit2D topRighttHit = Physics2D.Raycast(topRight, Vector2.up, length, m_WallCheckLayerMask);
         // Color color1 = topLeftHit ? Color.green : Color.red;
         // Color color2 = topRighttHit ? Color.green : Color.red;
         // Debug.DrawRay(topLeft, Vector2.up * (length), color1);
@@ -151,8 +160,8 @@ public class PlayerScript : MonoBehaviour
         Vector2 btmRight = new Vector2(playerColliderCenter.x + _width, playerColliderCenter.y - _height);
         Vector2 btmMiddle = new Vector2(playerColliderCenter.x, playerColliderCenter.y - _height);
 
-        RaycastHit2D outerHit = Physics2D.Raycast(btmRight, Vector2.down, _perfectCheckRayCastLength, m_SurfaceLayerMask);
-        RaycastHit2D innerHit = Physics2D.Raycast(btmMiddle, Vector2.down, _floorCheckRayCastLength, m_SurfaceLayerMask);
+        RaycastHit2D outerHit = Physics2D.Raycast(btmRight, Vector2.down, _perfectCheckRayCastLength, m_WallCheckLayerMask);
+        RaycastHit2D innerHit = Physics2D.Raycast(btmMiddle, Vector2.down, _floorCheckRayCastLength, m_WallCheckLayerMask);
         
         Color color1 = outerHit ? Color.green : Color.red;
         Color color2 = innerHit ? Color.green : Color.red;
@@ -177,8 +186,18 @@ public class PlayerScript : MonoBehaviour
     }
     private void HandleGravity()
     {
+        if (_currentFallSpeed < Data.MaxFallSpeed)
+        {            
+            _currentFallSpeed += Data.Acceleration * Time.deltaTime;
 
-        transform.Translate(Vector2.down * (Data.Gravity * Time.deltaTime));
+        }
+        if (_currentFallSpeed > Data.MaxFallSpeed)
+        {
+            _currentFallSpeed = Data.MaxFallSpeed;
+        }
+        transform.Translate(Vector2.down * (_currentFallSpeed * Time.deltaTime));
+        //transform.Translate(Vector2.down * (Data.MaxFallSpeed * Time.deltaTime));
+
         //transform.position = new Vector3(transform.position.x, transform.position.y - (gravity* Time.deltaTime));
     }
     private void ShootyMode()
@@ -198,6 +217,7 @@ public class PlayerScript : MonoBehaviour
         {
             _shootyModeDurationTime = _shootyModeDuration;
             _perfectCount = 0;
+            GameManager.Instance.UpdatePerfectCount();
         }
     }
 
@@ -231,7 +251,6 @@ public class PlayerScript : MonoBehaviour
     private void Die()
     {
         GameManager.Instance.ResetLevel();
-        //Destroy(gameObject);
     }
     
     
