@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5870054959899723892}
   - component: {fileID: -4298757960409439145}
   - component: {fileID: 1433535092622196400}
-  - component: {fileID: -6318092415831098186}
+  - component: {fileID: 1235308733393806526}
   m_Layer: 19
   m_Name: Bird1Egg
   m_TagString: Untagged
@@ -125,7 +125,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!50 &-6318092415831098186
+--- !u!50 &1235308733393806526
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0

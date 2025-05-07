@@ -197,35 +197,35 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 8495426266675900820, guid: a56a69ac8ab583946bd8a3ba4d603239, type: 3}
+    - target: {fileID: 0}
       propertyPath: m_BodyType
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 8495426266675900820, guid: a56a69ac8ab583946bd8a3ba4d603239, type: 3}
+    - target: {fileID: 0}
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 8495426266675900820, guid: a56a69ac8ab583946bd8a3ba4d603239, type: 3}
+    - target: {fileID: 0}
       propertyPath: m_Simulated
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 8495426266675900820, guid: a56a69ac8ab583946bd8a3ba4d603239, type: 3}
+    - target: {fileID: 0}
       propertyPath: m_Constraints
       value: 4
       objectReference: {fileID: 0}
-    - target: {fileID: 8495426266675900820, guid: a56a69ac8ab583946bd8a3ba4d603239, type: 3}
+    - target: {fileID: 0}
       propertyPath: m_Interpolate
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8495426266675900820, guid: a56a69ac8ab583946bd8a3ba4d603239, type: 3}
+    - target: {fileID: 0}
       propertyPath: m_UseAutoMass
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8495426266675900820, guid: a56a69ac8ab583946bd8a3ba4d603239, type: 3}
+    - target: {fileID: 0}
       propertyPath: m_GravityScale
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 8495426266675900820, guid: a56a69ac8ab583946bd8a3ba4d603239, type: 3}
+    - target: {fileID: 0}
       propertyPath: m_CollisionDetection
       value: 0
       objectReference: {fileID: 0}
